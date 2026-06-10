@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>形隨性格 — 《再見機器人》角色視覺分析</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --cream:  #FFF8E7;
+  --red:    #E8472A;
+  --blue:   #4AABDB;
+  --dark:   #2D2D2D;
+  --yellow: #F5C842;
+  --green:  #2D6A4F;
+  --bd:     3px solid #2D2D2D;
+}
+
+html, body { height: 100%; overflow: hidden; }
+
+body {
+  font-family: 'Noto Sans TC', sans-serif;
+  background: var(--dark);
+}
+
+/* ── SCROLL CONTAINER ── */
+#scroll-root {
+  height: 100vh;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  scrollbar-width: none;
+}
+#scroll-root::-webkit-scrollbar { display: none; }
+
+/* ── PROGRESS BAR ── */
+#progress-bar {
+  position: fixed;
+  top: 0; left: 0;
+  width: 0%;
+  height: 4px;
+  background: var(--red);
+  z-index: 9999;
+  transition: width 0.15s linear;
+}
+
+/* ── NAV DOTS ── */
+#nav-dots {
+  position: fixed;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 999;
+}
+.dot {
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--dark);
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+.dot.active { background: var(--red); transform: scale(1.3); }
+.dot:hover  { background: var(--red); opacity: 0.7; }
+
+/* ── SLIDE BASE ── */
+.slide {
+  height: 100vh;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  border-bottom: var(--bd);
+}
+
+.slide-inner {
+  width: 100%;
+  max-width: 1200px;
+  padding: 40px 56px;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.section-label {
+  align-self: flex-start;   /* ← 防止在 flex-column 裡被撐滿 */
+  display: inline-block;
+  background: var(--dark);
+  color: var(--cream);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  margin-bottom: 12px;
+  border: 2px solid var(--dark);
+}
+
+h2 {
+  font-size: clamp(1.8rem, 3.2vw, 2.2rem);
+  font-weight: 900;
+  line-height: 1.2;
+  margin-bottom: 16px;
+  align-self: flex-start;   /* ← 同上 */
+}
+
+/* ── ① HERO ── */
+#s1 { background: var(--cream); }
+
+.hero-deco {
+  position: absolute;
+  border: var(--bd);
+}
+.hero-deco-1 { width: 130px; height: 130px; top: 10vh; right: 8vw;  background: var(--yellow); animation: float1 4s ease-in-out infinite; }
+.hero-deco-2 { width:  70px; height:  70px; bottom: 18vh; right: 18vw; background: var(--blue);   animation: float2 3.2s ease-in-out infinite 0.4s; }
+.hero-deco-3 { width:  50px; height:  50px; bottom: 30vh; right: 10vw; background: var(--red);    animation: float3 5s ease-in-out infinite 0.8s; }
+.hero-deco-4 { width:  90px; height:  90px; top: 20vh;    right: 22vw; background: var(--green); opacity:0.75; animation: float4 3.8s ease-in-out infinite 1.2s; }
+.hero-deco-5 { width:  40px; height:  40px; bottom: 12vh; left: 5vw;   background: var(--red);   animation: float2 4.2s ease-in-out infinite 0.6s; }
+.hero-deco-6 { width:  55px; height:  55px; top: 15vh;    left: 8vw;   background: var(--blue);  opacity:0.6; animation: float1 3.6s ease-in-out infinite 1s; }
+
+@keyframes float1 { 0%,100%{transform:rotate(12deg) translateY(0)}  50%{transform:rotate(14deg) translateY(-12px)} }
+@keyframes float2 { 0%,100%{transform:translateY(0)}               50%{transform:translateY(-10px)} }
+@keyframes float3 { 0%,100%{transform:rotate(-8deg) translateY(0)} 50%{transform:rotate(-11deg) translateY(-14px)} }
+@keyframes float4 { 0%,100%{transform:rotate(5deg) translateY(0)}  50%{transform:rotate(3deg) translateY(-8px)} }
+
+.hero-tag {
+  display: inline-block;
+  background: var(--red);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 6px 16px;
+  border: var(--bd);
+  margin-bottom: 24px;
+}
+.hero-title {
+  font-size: clamp(3rem, 8vw, 5.5rem);
+  font-weight: 900;
+  color: var(--red);
+  line-height: 1;
+  margin-bottom: 10px;
+}
+.hero-title-en {
+  font-size: clamp(1.1rem, 2.5vw, 1.8rem);
+  font-weight: 700;
+  color: var(--dark);
+  letter-spacing: 0.05em;
+  margin-bottom: 20px;
+}
+.hero-subtitle {
+  font-size: clamp(0.95rem, 1.8vw, 1.1rem);
+  font-weight: 700;
+  color: var(--dark);
+  margin-bottom: 36px;
+  line-height: 1.7;
+}
+.hero-meta { display: flex; flex-wrap: wrap; gap: 12px; }
+.hero-chip {
+  background: var(--dark);
+  color: var(--cream);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 7px 18px;
+  border: var(--bd);
+}
+.hero-chip.blue   { background: var(--blue);   color: var(--dark); }
+.hero-chip.yellow { background: var(--yellow); color: var(--dark); }
+
+/* typewriter */
+.typewriter { border-right: 5px solid var(--red); animation: blink 0.75s step-end infinite; }
+.typewriter.done { border-right-color: transparent; }
+@keyframes blink { 0%,100%{border-right-color:var(--red)} 50%{border-right-color:transparent} }
+
+/* ── ② ABOUT ── */
+#s2 { background: var(--blue); }
+#s2 .section-label { background: var(--dark); }
+#s2 .slide-inner { justify-content: flex-start; padding-top: 48px; }
+
+.about-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: 1fr 1fr 1.2fr;
+  gap: 14px;
+  flex: 1;
+  min-height: 0;
+}
+.about-card {
+  background: var(--cream);
+  border: var(--bd);
+  padding: 20px 24px;
+  box-shadow: 3px 3px 0 var(--dark);
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.about-card:hover { transform: translateY(-3px); box-shadow: 6px 6px 0 var(--dark); }
+.about-card-label { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--red); margin-bottom: 8px; }
+.about-card-value { font-size: 16px; font-weight: 700; color: var(--dark); line-height: 1.6; }
+.about-card.wide2 { grid-column: span 2; }
+.about-card.wide4 { grid-column: span 4; background: var(--dark); }
+.about-card.wide4 .about-card-label { color: var(--yellow); }
+.about-card.wide4 .about-card-value { color: var(--cream); font-weight: 400; font-size: 15px; line-height: 1.8; }
+
+/* stagger */
+.stagger { opacity: 0; transform: translateY(16px); transition: opacity 0.45s ease, transform 0.45s ease; }
+.stagger.in { opacity: 1; transform: translateY(0); }
+
+/* ── ③ ANALYSIS ── */
+#s3 { background: var(--cream); }
+#s3 .slide-inner { justify-content: flex-start; padding-top: 24px; padding-bottom: 20px; }
+
+.analysis-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border: var(--bd);
+  box-shadow: 5px 5px 0 var(--dark);
+  flex: 1;
+  min-height: 0;
+}
+.char-col {
+  padding: 20px 28px;
+  display: flex;
+  flex-direction: column;
+}
+.char-col:first-child { border-right: var(--bd); background: #FFF3E0; }
+.char-col:last-child  { background: #E8F4F8; }
+
+.char-avatar {
+  width: 80px; height: 80px;
+  border: var(--bd);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 36px;
+  margin-bottom: 14px;
+  cursor: default;
+}
+.char-avatar.dog   { background: #D4A96A; }
+.char-avatar.robot { background: #B0BEC5; }
+@keyframes bob { 0%,100%{transform:translateY(0)} 40%{transform:translateY(-6px)} 60%{transform:translateY(-3px)} }
+.char-avatar:hover { animation: bob 0.6s ease; }
+
+.char-name    { font-size: 1.4rem; font-weight: 900; margin-bottom: 2px; }
+.char-name-en { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--red); margin-bottom: 20px; }
+.char-row     { margin-bottom: 8px; }
+.char-row-label {
+  font-size: 10px; font-weight: 900; letter-spacing: 0.1em; text-transform: uppercase;
+  background: var(--yellow); display: inline-block; padding: 2px 8px; border: 2px solid var(--dark); margin-bottom: 4px;
+}
+.char-row p { font-size: 14px; line-height: 1.6; }
+.char-badge { display: inline-block; background: var(--green); color: #fff; font-size: 12px; font-weight: 700; padding: 4px 12px; border: var(--bd); margin-top: auto; }
+
+/* ── ④ TRANSLATION ── */
+#s4 { background: var(--yellow); }
+#s4 .section-label { background: var(--dark); }
+#s4 .slide-inner { justify-content: flex-start; padding-top: 48px; }
+
+.trans-grid { display: grid; grid-template-columns: 1fr 1fr; grid-auto-rows: 1fr; gap: 24px; flex: 1; min-height: 0; }
+.trans-card {
+  background: var(--cream);
+  border: var(--bd);
+  padding: 32px 28px;
+  box-shadow: 5px 5px 0 var(--dark);
+  transition: transform 0.25s cubic-bezier(.22,.68,0,1.2), box-shadow 0.25s;
+  display: flex; flex-direction: column;
+  justify-content: space-between;
+}
+.trans-card:hover { transform: translateY(-6px); box-shadow: 10px 10px 0 var(--dark); }
+.trans-animal-icon {
+  font-size: 52px;
+  display: inline-block;
+  transition: transform 0.4s cubic-bezier(.34,1.56,.64,1);
+  margin-bottom: 10px;
+}
+.trans-card:hover .trans-animal-icon { transform: scale(1.25) rotate(-8deg); }
+.trans-name { font-size: 1.5rem; font-weight: 900; color: var(--red); margin-bottom: 2px; }
+.trans-animal-name { font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 16px; }
+.trans-row { margin-bottom: 12px; }
+.trans-row-label { font-size: 11px; font-weight: 900; letter-spacing: 0.1em; text-transform: uppercase; border-bottom: 2px solid var(--dark); padding-bottom: 2px; margin-bottom: 4px; }
+.trans-row p { font-size: 13px; line-height: 1.5; }
+.keyword-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.keyword {
+  background: var(--dark); color: var(--cream);
+  font-size: 12px; font-weight: 700; padding: 3px 10px; border: 2px solid var(--dark);
+  opacity: 0; transform: scale(0.7);
+  transition: opacity 0.3s ease, transform 0.3s cubic-bezier(.34,1.56,.64,1);
+}
+.keyword.in { opacity: 1; transform: scale(1); }
+.keyword.green { background: var(--green); }
+.trans-ref { display: inline-block; background: var(--blue); color: var(--dark); font-size: 12px; font-weight: 700; padding: 4px 12px; border: var(--bd); margin-top: 14px; }
+
+/* ── ⑤ RESULT ── */
+#s5 { background: var(--cream); }
+#s5 .slide-inner { justify-content: flex-start; padding-top: 48px; }
+
+.result-note { font-size: 14px; color: var(--dark); margin-bottom: 20px; padding: 10px 16px; border-left: 4px solid var(--blue); background: rgba(74,171,219,0.15); flex-shrink: 0; }
+.result-grid { display: grid; grid-template-columns: 1fr 1fr; grid-auto-rows: 1fr; gap: 20px; flex: 1; min-height: 0; }
+.result-card { border: var(--bd); overflow: hidden; box-shadow: 4px 4px 0 var(--dark); transition: transform 0.2s, box-shadow 0.2s; display: flex; flex-direction: column; }
+.result-card:hover { transform: translateY(-4px); box-shadow: 8px 8px 0 var(--dark); }
+.img-placeholder {
+  flex: 1; min-height: 0;
+  background: #E8E8E8;
+  border-bottom: var(--bd);
+  border: 3px dashed var(--dark);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+}
+.ph-icon { font-size: 52px; opacity: 0.3; }
+.ph-text { font-size: 14px; font-weight: 700; color: #999; text-align: center; }
+.result-footer { padding: 16px 20px; background: var(--cream); flex-shrink: 0; }
+.result-char-name { font-size: 1rem; font-weight: 900; margin-bottom: 10px; }
+.prompt-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--dark); color: var(--cream);
+  font-family: 'Noto Sans TC', sans-serif;
+  font-size: 13px; font-weight: 700; padding: 7px 14px; border: var(--bd);
+  cursor: pointer; transition: background 0.15s, transform 0.15s; letter-spacing: 0.04em;
+}
+.prompt-btn:hover { background: var(--red); transform: translateY(-2px); }
+.prompt-btn .arrow { display: inline-block; transition: transform 0.3s; font-style: normal; }
+.prompt-btn.open .arrow { transform: rotate(180deg); }
+.prompt-box { max-height: 0; overflow: hidden; transition: max-height 0.5s ease; }
+.prompt-box.open { max-height: 500px; }
+.prompt-inner {
+  margin-top: 10px; background: var(--dark); color: #A8D8A8;
+  font-family: 'Courier New', monospace; font-size: 11px; line-height: 1.65;
+  padding: 14px; border: var(--bd); white-space: pre-wrap; word-break: break-word;
+}
+
+/* ── ⑥ REFLECTION ── */
+#s6 { background: var(--dark); }
+#s6 h2 { color: var(--cream); }
+#s6 .section-label { background: var(--red); }
+#s6 .slide-inner { justify-content: flex-start; padding-top: 48px; }
+
+/* ── REFLECTION TIMELINE ── */
+.reflection-timeline {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1;
+  min-height: 0;
+  gap: 0;
+  position: relative;
+}
+/* horizontal connector line */
+.reflection-timeline::before {
+  content: '';
+  position: absolute;
+  left: 56px;
+  top: 0; bottom: 0;
+  width: 3px;
+  background: rgba(255,255,255,0.12);
+}
+.reflection-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 32px;
+  padding: 28px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  position: relative;
+  transition: transform 0.2s;
+}
+.reflection-item:last-child { border-bottom: none; }
+.reflection-item:hover { transform: translateX(6px); }
+.reflection-num-box {
+  flex-shrink: 0;
+  width: 56px; height: 56px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem; font-weight: 900;
+  border: 3px solid currentColor;
+  position: relative; z-index: 1;
+  transition: transform 0.3s cubic-bezier(.34,1.56,.64,1);
+}
+.reflection-item:hover .reflection-num-box { transform: scale(1.12); }
+.reflection-num-box.c1 { color: var(--yellow); background: rgba(245,200,66,0.15); }
+.reflection-num-box.c2 { color: var(--blue);   background: rgba(74,171,219,0.15); }
+.reflection-num-box.c3 { color: var(--red);    background: rgba(232,71,42,0.15);  }
+@keyframes numPop { 0%{transform:scale(1.4)} 100%{transform:scale(1)} }
+.reflection-num-box.pop { animation: numPop 0.4s ease; }
+.reflection-content { flex: 1; }
+.reflection-q {
+  font-size: 1.1rem; font-weight: 900; color: var(--cream);
+  margin-bottom: 8px; line-height: 1.3;
+}
+.reflection-a {
+  font-size: 14px; color: rgba(255,248,231,0.68); line-height: 1.8;
+  max-width: 640px;
+}
+
+/* ── FOOTER LINE ── */
+.footer-slide {
+  height: 56px;
+  scroll-snap-align: end;
+  background: var(--dark);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; color: #666; font-weight: 700; letter-spacing: 0.08em;
+  border-top: var(--bd);
+}
+
+/* ── RWD ── */
+@media (max-width: 760px) {
+  .slide-inner { padding: 0 20px; }
+  .hero-title { font-size: clamp(2.5rem, 10vw, 3.5rem); }
+  .about-grid { grid-template-columns: 1fr 1fr; }
+  .about-card.wide4 { grid-column: span 2; }
+  .analysis-grid, .trans-grid, .result-grid { grid-template-columns: 1fr; }
+  .char-col:first-child { border-right: none; border-bottom: var(--bd); }
+  .hero-deco-1,.hero-deco-2,.hero-deco-3,.hero-deco-4,.hero-deco-5,.hero-deco-6 { display: none; }
+  #nav-dots { display: none; }
+}
+
+/* ── LOADING SCREEN ── */
+#loader {
+  position: fixed; inset: 0;
+  background: var(--dark);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  z-index: 99999;
+  transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+#loader.hide { opacity: 0; visibility: hidden; }
+.loader-box {
+  border: 3px solid var(--cream);
+  padding: 40px 60px;
+  text-align: center;
+  position: relative;
+  animation: loaderPulse 1.2s ease-in-out infinite;
+}
+@keyframes loaderPulse {
+  0%,100% { border-color: var(--cream); }
+  50%      { border-color: var(--red); }
+}
+.loader-title {
+  font-size: clamp(2rem, 6vw, 3.5rem);
+  font-weight: 900;
+  color: var(--cream);
+  letter-spacing: 0.06em;
+  display: block;
+}
+.loader-sub {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255,248,231,0.45);
+  margin-top: 12px;
+  display: block;
+}
+.loader-bar-wrap {
+  margin-top: 32px;
+  width: 200px;
+  height: 3px;
+  background: rgba(255,255,255,0.1);
+  overflow: hidden;
+}
+.loader-bar-fill {
+  height: 100%;
+  background: var(--red);
+  animation: loaderFill 1.4s ease forwards;
+}
+@keyframes loaderFill { from { width:0% } to { width:100% } }
+
+/* ── PAGE INDICATOR ── */
+#page-indicator {
+  position: fixed;
+  bottom: 20px; left: 28px;
+  display: flex; align-items: center; gap: 10px;
+  z-index: 999;
+  transition: opacity 0.3s;
+}
+.pi-num {
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  color: var(--cream);
+  background: var(--dark);
+  padding: 4px 10px;
+  border: 2px solid rgba(255,255,255,0.2);
+}
+.pi-sep { font-size: 11px; color: rgba(255,255,255,0.3); font-weight: 700; }
+.pi-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.5);
+}
+
+/* ── COLOR SWATCHES ── */
+.swatch-row {
+  display: flex; gap: 6px; margin-top: 6px; margin-bottom: 2px;
+  align-items: center;
+}
+.swatch {
+  width: 20px; height: 20px;
+  border: 2px solid var(--dark);
+  flex-shrink: 0;
+  position: relative;
+  cursor: default;
+  transition: transform 0.15s;
+}
+.swatch:hover { transform: scale(1.3); z-index: 1; }
+.swatch-label {
+  font-size: 10px; font-weight: 700;
+  color: var(--dark); opacity: 0.55;
+  letter-spacing: 0.06em;
+}
+
+/* ── SVG GEO DIAGRAM ── */
+.geo-diagram {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 16px 0 8px;
+  border-top: 2px solid rgba(0,0,0,0.08);
+  margin-top: auto;
+}
+.geo-diagram svg { overflow: visible; }
+.geo-label {
+  font-size: 11px; font-weight: 700;
+  text-align: center; margin-top: 6px;
+  letter-spacing: 0.06em; text-transform: uppercase;
+}
+.geo-vs {
+  font-size: 1.1rem; font-weight: 900;
+  color: var(--dark); opacity: 0.3;
+}
+</style>
+</head>
+<body>
+
+<div id="loader">
+  <div class="loader-box">
+    <span class="loader-title">形隨性格</span>
+    <span class="loader-sub">Robot Dreams · Visual Analysis</span>
+    <div class="loader-bar-wrap"><div class="loader-bar-fill"></div></div>
+  </div>
+</div>
+<div id="page-indicator">
+  <span class="pi-num" id="pi-num">01 / 06</span>
+  <span class="pi-sep">·</span>
+  <span class="pi-label" id="pi-label">封面</span>
+</div>
+<div id="progress-bar"></div>
+
+<nav id="nav-dots" aria-label="頁面導航"></nav>
+
+<div id="scroll-root">
+
+  <!-- ① HERO -->
+  <section class="slide" id="s1" data-label="封面">
+    <div class="hero-deco hero-deco-6"></div>
+    <div class="hero-deco hero-deco-4"></div>
+    <div class="hero-deco hero-deco-1"></div>
+    <div class="hero-deco hero-deco-2"></div>
+    <div class="hero-deco hero-deco-3"></div>
+    <div class="hero-deco hero-deco-5"></div>
+    <div class="slide-inner">
+      <div class="hero-tag">114-2 奇幻影音導讀｜期末報告</div>
+      <div class="hero-title"><span class="typewriter" id="tw"></span></div>
+      <div class="hero-title-en" id="hero-en" style="opacity:0;transition:opacity 0.6s ease;">Form Follows Personality</div>
+      <div class="hero-subtitle" id="hero-sub" style="opacity:0;transform:translateY(10px);transition:opacity 0.6s ease 0.1s,transform 0.6s ease 0.1s;">
+        動畫角色視覺分析與 AI 創作實務<br>以《再見機器人》為分析文本
+      </div>
+      <div class="hero-meta" id="hero-meta" style="opacity:0;transition:opacity 0.6s ease 0.2s;">
+        <span class="hero-chip blue">🎬 Robot Dreams, 2023</span>
+        <span class="hero-chip yellow">四動三C｜D12370506 周莉蓉・D12371406 蘇靖</span>
+        <span class="hero-chip">Pablo Berger 導演</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ② ABOUT -->
+  <section class="slide" id="s2" data-label="關於">
+    <div class="slide-inner">
+      <div class="section-label">About the Film</div>
+      <h2>關於《再見機器人》</h2>
+      <div class="about-grid">
+        <div class="about-card stagger">
+          <div class="about-card-label">導演</div>
+          <div class="about-card-value">帕布羅·貝嘉<br><small style="font-weight:400;font-size:12px;">Pablo Berger</small></div>
+        </div>
+        <div class="about-card stagger">
+          <div class="about-card-label">年份</div>
+          <div class="about-card-value">2023 年</div>
+        </div>
+        <div class="about-card stagger">
+          <div class="about-card-label">視覺風格</div>
+          <div class="about-card-value">明晰線條<br><small style="font-weight:400;font-size:12px;">Ligne Claire</small></div>
+        </div>
+        <div class="about-card stagger">
+          <div class="about-card-label">語言特色</div>
+          <div class="about-card-value">全片無對白<br><small style="font-weight:400;font-size:12px;">純視覺 × 音樂敘事</small></div>
+        </div>
+        <div class="about-card wide2 stagger">
+          <div class="about-card-label">獎項</div>
+          <div class="about-card-value" style="font-size:14px;line-height:1.9;">🏆 2024 奧斯卡最佳動畫片入圍<br>🏅 安錫動畫影展最佳影片</div>
+        </div>
+        <div class="about-card wide2 stagger">
+          <div class="about-card-label">漫畫傳統</div>
+          <div class="about-card-value" style="font-size:13px;font-weight:400;line-height:1.6;">源自《丁丁歷險記》法國比利時漫畫傳統，均勻輪廓線、平塗色彩、無陰影漸層。</div>
+        </div>
+        <div class="about-card wide4 stagger">
+          <div class="about-card-label">Ligne Claire 核心原則</div>
+          <div class="about-card-value">均勻粗細的輪廓線・平塗色彩（禁止漸層）・無投影無陰影・以造型線條而非光影傳達立體感・簡練的造型傳達豐富情感</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ③ ANALYSIS -->
+  <section class="slide" id="s3" data-label="角色分析">
+    <div class="slide-inner">
+      <div class="section-label">Visual Analysis</div>
+      <h2>角色視覺心理分析</h2>
+      <div class="analysis-grid">
+        <div class="char-col">
+          <img src="狗.png" alt="狗先生" style="width:100%;max-height:22vh;object-fit:contain;display:block;border:3px solid #2D2D2D;margin-bottom:14px;background:#f0f0f0;">
+          <div class="char-name" style="margin-top:8px;">狗先生</div>
+          <div class="char-name-en">Dog</div>
+          <div class="char-row">
+            <div class="char-row-label">幾何造形</div>
+            <p>圓潤身形・軟弧線輪廓・大眼睛・無尖銳稜角</p>
+          </div>
+          <div class="char-row">
+            <div class="char-row-label">色彩計畫</div>
+            <p>暖棕色 / 米黃色系，高明度，飽和度適中</p>
+          <div class="swatch-row">
+            <div class="swatch" style="background:#D4A96A;" title="#D4A96A"></div>
+            <div class="swatch" style="background:#C8956A;" title="#C8956A"></div>
+            <div class="swatch" style="background:#E8C99A;" title="#E8C99A"></div>
+            <div class="swatch" style="background:#F5E6C8;" title="#F5E6C8"></div>
+            <div class="swatch" style="background:#A0522D;" title="#A0522D"></div>
+            <span class="swatch-label">暖棕・米黃色系</span>
+          </div>
+          </div>
+          <div class="char-row">
+            <div class="char-row-label">性格暗示</div>
+            <p>圓＝開放渴望連結；暖色＝孤獨但本質善良</p>
+          </div>
+          <div class="char-row">
+            <div class="char-row-label">正邪屬性</div>
+            <p>正派，帶有真實人性的軟弱與不完美</p>
+          </div>
+          <span class="char-badge">主角 · Protagonist</span>
+        </div>
+        <div class="char-col">
+          <img src="機器人.png" alt="機器人" style="width:100%;max-height:22vh;object-fit:contain;display:block;border:3px solid #2D2D2D;margin-bottom:14px;background:#f0f0f0;">
+          <div class="char-name" style="margin-top:8px;">機器人</div>
+          <div class="char-name-en">Robot</div>
+          <div class="char-row">
+            <div class="char-row-label">幾何造形</div>
+            <p>方形頭部・直角肩膀・幾何硬邊・完全對稱結構</p>
+          </div>
+          <div class="char-row">
+            <div class="char-row-label">色彩計畫</div>
+            <p>銀灰色金屬感，冷色調，低飽和度</p>
+          <div class="swatch-row">
+            <div class="swatch" style="background:#B0BEC5;" title="#B0BEC5"></div>
+            <div class="swatch" style="background:#CFD8DC;" title="#CFD8DC"></div>
+            <div class="swatch" style="background:#90A4AE;" title="#90A4AE"></div>
+            <div class="swatch" style="background:#ECEFF1;" title="#ECEFF1"></div>
+            <div class="swatch" style="background:#546E7A;" title="#546E7A"></div>
+            <span class="swatch-label">銀灰・冷色調</span>
+          </div>
+          </div>
+          <div class="char-row">
+            <div class="char-row-label">性格暗示</div>
+            <p>方形＝穩定可靠被動等待；冷色＝理性純粹</p>
+          </div>
+          <div class="char-row">
+            <div class="char-row-label">正邪屬性</div>
+            <p>正派，且比狗先生更無私，是情感中的定錨</p>
+          </div>
+          <span class="char-badge">主角 · Protagonist</span>
+        </div>
+      </div>
+      <!-- GEO COMPARISON BAR -->
+      <div style="display:flex;align-items:center;justify-content:center;gap:40px;padding:14px 0 0;border-top:3px solid #2D2D2D;margin-top:0;">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <svg width="44" height="44" viewBox="0 0 60 60"><circle cx="30" cy="30" r="26" fill="#E8C99A" stroke="#2D2D2D" stroke-width="3"/></svg>
+          <span style="font-size:13px;font-weight:900;letter-spacing:0.08em;color:#A0522D;">圓 · 開放 · 渴望連結</span>
+        </div>
+        <span style="font-size:1.4rem;font-weight:900;color:#2D2D2D;opacity:0.25;">VS</span>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <svg width="44" height="44" viewBox="0 0 60 60"><rect x="4" y="4" width="52" height="52" fill="#CFD8DC" stroke="#2D2D2D" stroke-width="3"/></svg>
+          <span style="font-size:13px;font-weight:900;letter-spacing:0.08em;color:#546E7A;">方 · 穩定 · 理性純粹</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ④ TRANSLATION -->
+  <section class="slide" id="s4" data-label="性格轉譯">
+    <div class="slide-inner">
+      <div class="section-label">Personality Translation</div>
+      <h2>我們的性格轉譯</h2>
+      <div class="trans-grid">
+        <div class="trans-card stagger">
+          <div class="trans-animal-icon">🤖</div>
+          <div class="trans-name">莉蓉</div>
+          <div class="trans-animal-name">Animal · Robot</div>
+          <div class="trans-row">
+            <div class="trans-row-label">性格關鍵字</div>
+            <div class="keyword-list">
+              <span class="keyword">大方</span>
+              <span class="keyword">冷靜</span>
+              <span class="keyword">俐落簡單</span>
+            </div>
+          </div>
+          <div class="trans-row">
+            <div class="trans-row-label">視覺轉譯</div>
+            <p>方形頭・直角肩膀・幾何硬邊・白灰金屬配色・對稱結構・無多餘配件</p>
+          </div>
+          <div class="trans-row">
+            <div class="trans-row-label">造形語言</div>
+            <p>完全對稱的方正幾何＝冷靜可靠，低彩度銀灰配色＝理性俐落，排除一切裝飾讓「簡單」說話</p>
+          </div>
+          <span class="trans-ref">直接對應 Robot 角色</span>
+        </div>
+        <div class="trans-card stagger">
+          <div class="trans-animal-icon">🐰</div>
+          <div class="trans-name">蘇靖</div>
+          <div class="trans-animal-name">Animal · Black &amp; White Rabbit</div>
+          <div class="trans-row">
+            <div class="trans-row-label">性格關鍵字</div>
+            <div class="keyword-list">
+              <span class="keyword">冷靜</span>
+              <span class="keyword">友善</span>
+              <span class="keyword green">深綠色系</span>
+            </div>
+          </div>
+          <div class="trans-row">
+            <div class="trans-row-label">視覺轉譯</div>
+            <p>圓潤臉形・柔和輪廓・黑白花色・深森林綠帽子與包包</p>
+          </div>
+          <div class="trans-row">
+            <div class="trans-row-label">造形語言</div>
+            <p>圓弧輪廓傳達親切感，深綠色配件點綴性格，黑白底色凸顯冷靜氣質</p>
+          </div>
+          <span class="trans-ref">呼應 Dog 的圓潤親切感</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ⑤ RESULT -->
+  <section class="slide" id="s5" data-label="AI 成果">
+    <div class="slide-inner">
+      <div class="section-label">AI Generation</div>
+      <h2>AI 虛擬分身</h2>
+      <div class="result-note">使用 <strong>Flux（pollinations.ai）</strong> 生成，風格參考《再見機器人》Ligne Claire 畫風 — 均勻輪廓線・平塗色彩・無漸層無陰影・附 1980s 紐約背景</div>
+      <div class="result-grid">
+        <div class="result-card stagger">
+          <div class="img-placeholder" style="border:none;background:#f0f0f0;position:relative;overflow:hidden;">
+            <img src="截圖 2026-06-10 晚上8.00.57.png" alt="莉蓉的 AI 角色圖" style="width:100%;height:100%;object-fit:contain;">
+          </div>
+          <div class="result-footer">
+            <div class="result-char-name">莉蓉 · Robot Character</div>
+            <button class="prompt-btn" onclick="togglePrompt(this,'p-lr')" aria-expanded="false">
+              <span>Prompt 展開</span><i class="arrow">▼</i>
+            </button>
+            <div class="prompt-box" id="p-lr">
+              <div class="prompt-inner">Generate a character illustration in the Ligne Claire style
+(flat color, uniform outline, no gradients, no shading).
+
+Character: An anthropomorphic robot character inspired by
+the film Robot Dreams (2023).
+
+Visual design:
+- Perfectly square head, rectangular torso, right-angle shoulders
+- Fully symmetrical body structure, hard geometric edges
+- Color palette: silver, white and light gray as primary colors,
+  cold tones, with clean black outlines (3px uniform weight)
+- No accessories or decorative elements — minimal and clean
+- Expression: calm, composed, reliable
+- Pose: standing upright, arms at sides, fully symmetrical
+
+Style reference: Robot Dreams (2023), Pablo Berger
+Background: flat cream white (#FFF8E7).
+No drop shadows. No texture. No gradients whatsoever.</div>
+            </div>
+          </div>
+        </div>
+        <div class="result-card stagger">
+          <div class="img-placeholder" style="border:none;background:#f0f0f0;position:relative;overflow:hidden;">
+                        <img src="截圖 2026-06-10 晚上8.18.33.png" alt="蘇靖的 AI 角色圖" style="width:100%;height:100%;object-fit:contain;">
+          </div>
+          <div class="result-footer">
+            <div class="result-char-name">蘇靖 · Rabbit Character</div>
+            <button class="prompt-btn" onclick="togglePrompt(this,'p-sj')" aria-expanded="false">
+              <span>Prompt 展開</span><i class="arrow">▼</i>
+            </button>
+            <div class="prompt-box" id="p-sj">
+              <div class="prompt-inner">Generate a character illustration in the Ligne Claire style
+(flat color, uniform outline, no gradients, no shading).
+
+Character: An anthropomorphic black-and-white rabbit character.
+
+Visual design:
+- Round, soft face shape with gentle curved outlines
+- Body: black and white spotted/patched fur pattern, flat-filled
+- Accessories: deep forest green hat (#2D6A4F) and small bag
+  — both with clean black outlines
+- Expression: calm yet warm and approachable
+- Pose: standing, slightly relaxed
+
+Style reference: Robot Dreams (2023), Pablo Berger
+Background: flat cream white (#FFF8E7).
+Strictly NO drop shadows. NO texture. NO gradients.
+Outline weight must be uniform throughout (3px).</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ⑥ REFLECTION -->
+  <section class="slide" id="s6" data-label="設計反思">
+    <div class="slide-inner">
+      <div class="section-label">Reflection</div>
+      <h2>設計反思</h2>
+      <div class="reflection-timeline">
+        <div class="reflection-item stagger">
+          <div class="reflection-num-box c1" data-target="1">00</div>
+          <div class="reflection-content">
+            <div class="reflection-q">視覺符號是否成功傳遞性格？</div>
+            <div class="reflection-a">方與圓的對比——一看就能感受莉蓉的冷靜俐落與蘇靖的友善親切。幾何語言的確能在語言之前抵達觀者的直覺。</div>
+          </div>
+        </div>
+        <div class="reflection-item stagger">
+          <div class="reflection-num-box c2" data-target="2">00</div>
+          <div class="reflection-content">
+            <div class="reflection-q">AI 生成的挑戰</div>
+            <div class="reflection-a">Ligne Claire 風格對 AI 來說最難的是：禁止漸層、禁止陰影、保持輪廓線粗細一致。需要多次精修 Prompt 才能逼近原作風格。</div>
+          </div>
+        </div>
+        <div class="reflection-item stagger">
+          <div class="reflection-num-box c3" data-target="3">00</div>
+          <div class="reflection-content">
+            <div class="reflection-q">過程的收穫</div>
+            <div class="reflection-a">學會用幾何語言描述性格，而非只用文字形容詞。「她很冷靜」不如「方形頭 + 低飽和度」——前者仰賴詮釋，後者直接是視覺本身。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="footer-slide">
+    形隨性格 · Form Follows Personality · 114-2 奇幻影音導讀 · 莉蓉 &amp; 蘇靖
+  </div>
+
+</div><!-- /scroll-root -->
+
+<script>
+const root = document.getElementById('scroll-root');
+const bar  = document.getElementById('progress-bar');
+const slides = [...document.querySelectorAll('.slide')];
+
+// ── NAV DOTS ──
+const navEl = document.getElementById('nav-dots');
+slides.forEach((s, i) => {
+  const d = document.createElement('div');
+  d.className = 'dot' + (i === 0 ? ' active' : '');
+  d.title = s.dataset.label || '';
+  d.addEventListener('click', () => s.scrollIntoView({ behavior: 'smooth' }));
+  navEl.appendChild(d);
+});
+const dots = [...navEl.querySelectorAll('.dot')];
+
+// ── SCROLL PROGRESS + ACTIVE DOT ──
+root.addEventListener('scroll', () => {
+  const scrolled = root.scrollTop;
+  const total    = root.scrollHeight - root.clientHeight;
+  bar.style.width = (scrolled / total * 100) + '%';
+
+  // active dot
+  let active = 0;
+  slides.forEach((s, i) => {
+    if (s.offsetTop <= scrolled + root.clientHeight * 0.5) active = i;
+  });
+  dots.forEach((d, i) => d.classList.toggle('active', i === active));
+  updateIndicator(active);
+
+  // trigger stagger / count-up for visible slides
+  slides.forEach(s => {
+    const rect = s.getBoundingClientRect();
+    if (rect.top < window.innerHeight * 0.85) triggerSlide(s);
+  });
+}, { passive: true });
+
+// ── TYPEWRITER ──
+(function() {
+  const el   = document.getElementById('tw');
+  const text = '形隨性格';
+  let i = 0;
+  function type() {
+    if (i <= text.length) {
+      el.textContent = text.slice(0, i++);
+      setTimeout(type, i === 1 ? 400 : 130);
+    } else {
+      el.classList.add('done');
+      document.getElementById('hero-en').style.opacity  = '1';
+      const sub = document.getElementById('hero-sub');
+      sub.style.opacity   = '1';
+      sub.style.transform = 'translateY(0)';
+      document.getElementById('hero-meta').style.opacity = '1';
+    }
+  }
+  setTimeout(type, 600);
+})();
+
+// ── HERO PARALLAX ──
+const heroEl = document.getElementById('s1');
+const decos  = [...heroEl.querySelectorAll('.hero-deco')];
+const depths = [20, 12, 16, 9, 14, 10];
+heroEl.addEventListener('mousemove', e => {
+  const r  = heroEl.getBoundingClientRect();
+  const cx = (e.clientX - r.left) / r.width  - 0.5;
+  const cy = (e.clientY - r.top)  / r.height - 0.5;
+  decos.forEach((d, i) => {
+    d.style.marginLeft = (cx * depths[i]) + 'px';
+    d.style.marginTop  = (cy * depths[i]) + 'px';
+  });
+});
+heroEl.addEventListener('mouseleave', () => {
+  decos.forEach(d => { d.style.marginLeft = '0'; d.style.marginTop = '0'; });
+});
+
+// ── SLIDE TRIGGER (stagger, keywords, count-up) ──
+const triggered = new Set();
+function triggerSlide(slide) {
+  if (triggered.has(slide)) return;
+  triggered.add(slide);
+
+  // stagger children
+  slide.querySelectorAll('.stagger').forEach((el, i) => {
+    setTimeout(() => el.classList.add('in'), 80 + i * 90);
+  });
+
+  // keyword pop
+  slide.querySelectorAll('.keyword').forEach((kw, i) => {
+    setTimeout(() => kw.classList.add('in'), 200 + i * 55);
+  });
+
+  // count-up
+  slide.querySelectorAll('.reflection-num-box[data-target]').forEach((el, i) => {
+    const target = parseInt(el.dataset.target, 10);
+    let cur = 0;
+    const step = () => {
+      cur++;
+      el.textContent = String(cur).padStart(2, '0');
+      if (cur < target) setTimeout(step, 90);
+      else el.classList.add('pop');
+    };
+    setTimeout(step, 250 + i * 280);
+  });
+}
+
+// trigger first slide immediately
+triggerSlide(slides[0]);
+
+// ── PROMPT TOGGLE ──
+function togglePrompt(btn, id) {
+  const box    = document.getElementById(id);
+  const isOpen = box.classList.contains('open');
+  box.classList.toggle('open', !isOpen);
+  btn.classList.toggle('open', !isOpen);
+  btn.setAttribute('aria-expanded', String(!isOpen));
+  btn.querySelector('span').textContent = isOpen ? 'Prompt 展開' : 'Prompt 收合';
+}
+
+// ── LOADING SCREEN ──
+// 用 DOMContentLoaded + 固定秒數，不等圖片載入，避免卡住
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    document.getElementById('loader').classList.add('hide');
+  }, 1600);
+});
+// 保險：最多等 3 秒強制關閉
+setTimeout(() => {
+  const l = document.getElementById('loader');
+  if (l) l.classList.add('hide');
+}, 3000);
+
+// ── PAGE INDICATOR ──
+const piNum   = document.getElementById('pi-num');
+const piLabel = document.getElementById('pi-label');
+function updateIndicator(idx) {
+  piNum.textContent   = String(idx + 1).padStart(2,'0') + ' / ' + String(slides.length).padStart(2,'0');
+  piLabel.textContent = slides[idx].dataset.label || '';
+}
+updateIndicator(0);
+
+// ── KEYBOARD NAVIGATION ──
+document.addEventListener('keydown', e => {
+  const scrolled = root.scrollTop;
+  let active = 0;
+  slides.forEach((s, i) => { if (s.offsetTop <= scrolled + root.clientHeight * 0.5) active = i; });
+  if ((e.key === 'ArrowDown' || e.key === 'ArrowRight') && active < slides.length - 1) {
+    e.preventDefault();
+    slides[active + 1].scrollIntoView({ behavior: 'smooth' });
+  }
+  if ((e.key === 'ArrowUp' || e.key === 'ArrowLeft') && active > 0) {
+    e.preventDefault();
+    slides[active - 1].scrollIntoView({ behavior: 'smooth' });
+  }
+});
+
+</script>
+</body>
+</html>
